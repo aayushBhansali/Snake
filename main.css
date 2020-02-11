@@ -12,7 +12,17 @@
     height:600px;
     top: 6%;
     left: 3%;
+}
 
+#Start{
+    margin-left: 1350px;
+    margin-top: 20px;
+}
+
+#score{
+    margin-left: 1250px;
+    margin-top: 20px;
+    width: 200px;
 }
 
 #initialBlock{

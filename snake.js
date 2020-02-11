@@ -3,13 +3,16 @@ let leftFlag = false;
 let rightFlag = false;
 let downFlag = false;
 let prevDir = 0;
-const speed = 100;
+let speed = 100;
 let count = 0;
 
 let prevX = 0;
 let prevY = 0
 let prevX1 = 0;
 let prevY1 = 0;
+
+let loopStart = 5;
+let score = 0;
 
 // Generate a snake at start
 let generateSnake = () => {
@@ -26,37 +29,35 @@ let generateSnake = () => {
 let checkKey = (event) => {
     let e = window.event ? window.event : event;
 
-    if (event.keyCode == 38){
-        console.log("Up flag set");
+    if (event.keyCode == 38) {
         upFlag = true;
         leftFlag = false;
         rightFlag = false;
         downFlag = false;
     }
 
-    else if (event.keyCode == 37){
+    else if (event.keyCode == 37) {
         upFlag = false;
         leftFlag = true;
         rightFlag = false;
         downFlag = false;
     }
 
-    else if (event.keyCode == 39){
+    else if (event.keyCode == 39) {
         upFlag = false;
         leftFlag = false;
         rightFlag = true;
         downFlag = false;
     }
 
-    else if (event.keyCode == 40){
+    else if (event.keyCode == 40) {
         upFlag = false;
         leftFlag = false;
         rightFlag = false;
         downFlag = true;
     }
 
-    else if (event.keyCode == 32){
-        console.log(count);
+    else if (event.keyCode == 32) {
         if (count % 2 == 0){
             clearInterval(eve);
             upFlag = false;
@@ -71,9 +72,7 @@ let checkKey = (event) => {
         }
 
         count++;
-        
     }
-
 }
 
 // Generate a random food
@@ -101,25 +100,21 @@ let generateFood = () =>{
 let up = () => {
 
     if(leftFlag){
-        prevDir = 1;
         clearInterval(eve);
         eve = setInterval(left, speed);
     }
 
     else if(rightFlag){
-        prevDir = 1;
         clearInterval(eve);
         eve = setInterval(right, speed);
     }
 
     else if(downFlag){
-        prevDir = 1;
         clearInterval(eve);
         eve = setInterval(down, speed);
     }
 
     let snake = document.getElementById("initialBlock");
-    let food = document.getElementById("food");
     prevX = parseInt(snake.style.left);
     prevY = parseInt(snake.style.bottom);
     let x = parseInt(snake.style.bottom) + 20;
@@ -127,9 +122,12 @@ let up = () => {
         x = 0;
     }
 
+    checkFoodStat(x);
+    checkCollision();
+
     let elements = document.getElementsByTagName("div");
     
-    for(let i = 4; i < elements.length; i++){
+    for(let i = loopStart; i < elements.length; i++){
         prevX1 = parseInt(elements[i].style.left);
         prevY1 = parseInt(elements[i].style.bottom);
         elements[i].style.left = prevX + "px";
@@ -138,28 +136,24 @@ let up = () => {
         prevY = prevY1;
     }
 
-    checkFoodStat(x);
-
     snake.style.bottom = x + 'px';
+    showScore();
 }
 
 
 // Moton in left direction
 let left = () => {
     if(upFlag){
-        prevDir = 2;
         clearInterval(eve);
         eve = setInterval(up, speed);
     }
 
     else if(rightFlag){
-        prevDir = 2;
         clearInterval(eve);
         eve = setInterval(right, speed);
     }
 
     else if(downFlag){
-        prevDir = 2;
         clearInterval(eve);
         eve = setInterval(down, speed);
     }
@@ -170,9 +164,12 @@ let left = () => {
     let x = parseInt(snake.style.left) - 20;
     if(x < 0) x += 1400;
 
+    checkFoodStat(x);
+    checkCollision();
+
     let elements = document.getElementsByTagName("div");
     
-    for(let i = 4; i < elements.length; i++){
+    for(let i = loopStart; i < elements.length; i++){
         prevX1 = parseInt(elements[i].style.left);
         prevY1 = parseInt(elements[i].style.bottom);
         elements[i].style.left = prevX + "px";
@@ -180,28 +177,24 @@ let left = () => {
         prevX = prevX1;
         prevY = prevY1;
     }
-    
-    checkFoodStat(x);
     snake.style.left = x + 'px';
+    showScore();
 }
 
 
 // Motion in downward direction
 let down = () => {
     if(upFlag){
-        prevDir = 3;
         clearInterval(eve);
         eve = setInterval(up, speed);
     }
 
     else if(rightFlag){
-        prevDir = 3;
         clearInterval(eve);
         eve = setInterval(right, speed);
     }
 
     else if(leftFlag){
-        prevDir = 3;
         clearInterval(eve);
         eve = setInterval(left, speed);
     }
@@ -212,10 +205,11 @@ let down = () => {
     let x = parseInt(snake.style.bottom) - 20;
     if(x < 0) x = 580;
     checkFoodStat(x);
+    checkCollision();
 
     let elements = document.getElementsByTagName("div");
 
-    for(let i = 4; i < elements.length; i++){
+    for(let i = loopStart; i < elements.length; i++){
         prevX1 = parseInt(elements[i].style.left);
         prevY1 = parseInt(elements[i].style.bottom);
         elements[i].style.left = prevX + "px";
@@ -225,7 +219,7 @@ let down = () => {
     }
 
      snake.style.bottom = x + 'px';
-    
+     showScore();
 }
 
 
@@ -233,19 +227,16 @@ let down = () => {
 // Motion in right direction
 let right = () => {
     if(upFlag){
-        prevDir = 4;
         clearInterval(eve);
         eve = setInterval(up, speed);
     }
 
     else if(leftFlag){
-        prevDir = 4;
         clearInterval(eve);
         eve = setInterval(left, speed);
     }
 
     else if(downFlag){
-        prevDir = 4;
         clearInterval(eve);
         eve = setInterval(down, speed);
     }
@@ -256,10 +247,11 @@ let right = () => {
     let x = parseInt(snake.style.left) + 20;
     if (x > 1410) x -= 1400;
     checkFoodStat(x);
+    checkCollision();
 
     let elements = document.getElementsByTagName("div");
     
-    for(let i = 4; i < elements.length; i++){
+    for(let i = loopStart; i < elements.length; i++){
         prevX1 = parseInt(elements[i].style.left);
         prevY1 = parseInt(elements[i].style.bottom);
         elements[i].style.left = prevX + "px";
@@ -269,6 +261,7 @@ let right = () => {
     }
 
     snake.style.left = x + 'px';
+    showScore();
 }
 
 let checkFoodStat = (x) => {
@@ -278,7 +271,32 @@ let checkFoodStat = (x) => {
         console.log("Food Captured");
         generateFood();
         document.getElementById("innerframe").append(node);
+        score += 10;
     }
+}
+
+let checkCollision = () => {
+    let snake = document.getElementById("initialBlock");
+    let elements = document.getElementsByTagName("div");
+
+    for(let i = 4; i < elements.length; i++){
+        if ((parseInt(snake.style.left) == parseInt(elements[i].style.left) && (parseInt(snake.style.bottom) == parseInt(elements[i].style.bottom)))) {
+            alert("Game Over");
+            clearInterval(eve);
+        }
+    }
+}
+
+
+let showScore = () => {
+    document.getElementById("score").innerHTML = "Score : " + score;
+    if (score % 100 == 0 && score != 0){
+        speed -= 20;
+        score += 10;
+    }   
+    if (speed <= 10) speed = 11;
+
+    console.log(score);
 }
 
 document.addEventListener('keydown', checkKey);
@@ -287,5 +305,5 @@ generateSnake();
 generateFood();
 
 
-
+let start = document.getElementById("Start");
 let eve = window.setInterval(down, speed);
