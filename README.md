@@ -1,2 +1,2 @@
 # Snake
-Implementing the snake game using vanilla JS.
+Implementing the snake game using JS.
