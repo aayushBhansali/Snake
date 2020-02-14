@@ -2,6 +2,7 @@ let upFlag = false;
 let leftFlag = false;
 let rightFlag = false;
 let downFlag = false;
+
 let prevDir = 0;
 let speed = 100;
 let count = 0;
@@ -31,46 +32,34 @@ let checkKey = (event) => {
 
     if (event.keyCode == 38) {
         upFlag = true;
-        leftFlag = false;
-        rightFlag = false;
-        downFlag = false;
+        leftFlag = rightFlag = downFlag = false;
     }
 
     else if (event.keyCode == 37) {
-        upFlag = false;
         leftFlag = true;
-        rightFlag = false;
-        downFlag = false;
+        upFlag = rightFlag = downFlag = false;
     }
 
     else if (event.keyCode == 39) {
-        upFlag = false;
-        leftFlag = false;
         rightFlag = true;
-        downFlag = false;
+        upFlag = leftFlag = downFlag = false;
     }
 
     else if (event.keyCode == 40) {
-        upFlag = false;
-        leftFlag = false;
-        rightFlag = false;
         downFlag = true;
+        upFlag = leftFlag = rightFlag = false;
     }
 
     else if (event.keyCode == 32) {
         if (count % 2 == 0){
             clearInterval(eve);
-            upFlag = false;
-            leftFlag = false;
-            rightFlag = false;
-            downFlag = false;
+            upFlag = leftFlag = rightFlag = downFlag = false;
         }   
 
         else {
             console.log("Keep going buddy");
             eve = setInterval(down, speed);
         }
-
         count++;
     }
 }
