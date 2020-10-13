@@ -16,13 +16,38 @@ $("document").ready(function(){
     let loopStart = 5;
     let score = 0;
 
+    let currWidth = Math.round($("#innerframe").outerWidth());
+    let newWidth = currWidth - (currWidth % 20);
+    $("#innerframe").css("width", newWidth + "px");
+    console.log("Width changed " + newWidth);
+
+    let currHeight = Math.round($("#innerframe").outerHeight());
+    let newHeight = currHeight - (currHeight % 20);
+    $("#innerframe").css("height", newHeight + "px");
+
+    let parentLeft = Math.round($("#innerframe").offset()["left"]);
+    let parentRight = Math.round($("#innerframe").width());
+    let parentTop = Math.round($("#innerframe").offset()["top"]);
+    let parentBottom = Math.round($("#innerframe").height());
+
+    console.log("Window : " + $(window).height());
+    console.log("Inner Frame Height : " + $("#innerframe").height());
+    console.log("Inner Frame Start : " + parentTop);
+    console.log("Inner Frame End : " + parentBottom);
+
+    function getRandomInt(min, max) {
+        min = Math.ceil(min);
+        max = Math.floor(max);
+        let r = Math.floor(Math.random() * (max - min + 1)) + min;
+        r -= r % 20;
+        return r;
+    }
     
     // Generate a snake at start
     let generateSnake = () => {
-        $("#initialBlock").css("left", 300);
-        $("#initialBlock").css("bottom", 300);
+        $("#initialBlock").css("left", getRandomInt(parentLeft, parentRight));
+        $("#initialBlock").css("bottom", getRandomInt(parentTop, parentBottom));
     }
-
 
     let resetFlag = () => {
         upFlag = rightFlag = leftFlag = downFlag = false;
@@ -75,14 +100,8 @@ $("document").ready(function(){
 
     // Generate a random food
     let generateFood = () =>{
-        let x = Math.floor(Math.random() * 1000);
-        let y = Math.floor(Math.random() * 1000);
-
-        x = (x > 590) ? x-600 : x
-        y = (y > 590) ? y-600 : y
-    
-        x -= x % 20;
-        y -= y % 20;
+        let x = getRandomInt(parentLeft, parentRight-20);
+        let y = getRandomInt(parentTop, parentBottom-20);
 
         $("#food").css("left", x);
         $("#food").css("bottom", y);
@@ -112,7 +131,11 @@ $("document").ready(function(){
         
         
         let x = parseInt($("#initialBlock").css("bottom")) + 20;
-        x = (x > 590) ? 0 : x
+        console.log("X : " + x);
+        if(x > parentBottom - 20){
+            alert("Game Over");
+            clearInterval(eve);
+        }
 
         checkFoodStat();
         checkCollision();
@@ -155,7 +178,10 @@ $("document").ready(function(){
         prevY = parseInt(snake.style.bottom);
         let x = parseInt($("#initialBlock").css("left")) - 20;
 
-        x = (x < 0) ? x + 1400 : x
+        if (x < 0){
+            alert("Game over");
+            clearInterval(eve);
+        }
 
         checkFoodStat();
         checkCollision();
@@ -197,7 +223,10 @@ $("document").ready(function(){
         prevX = parseInt(snake.style.left);
         prevY = parseInt(snake.style.bottom);
         let x = parseInt($("#initialBlock").css("bottom")) - 20;
-        x = (x < 0) ? 580 : x
+        if(x < 0) {
+            alert("Game over");
+            clearInterval(eve);
+        }
         
         checkFoodStat();
         checkCollision();
@@ -241,7 +270,12 @@ $("document").ready(function(){
         
 
         let x = parseInt($("#initialBlock").css("left")) + 20;
-        x = (x > 1410) ? x - 1400 : x
+        console.log(x);
+        if(x > parentRight - 20) {
+            alert("Game over");
+            console.log("Done : " + $("#initialBlock").offset().left);
+            clearInterval(eve);
+        }
 
         checkFoodStat();
         checkCollision();
@@ -265,6 +299,7 @@ $("document").ready(function(){
     let checkFoodStat = (x) => {
         let snake = document.getElementById("initialBlock");
         let node = document.createElement("div");
+        node.setAttribute("id", "follower")
         if (snake.style.left == food.style.left && snake.style.bottom == food.style.bottom){
             console.log("Food Captured");
             generateFood();
